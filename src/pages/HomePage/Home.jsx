@@ -62,9 +62,11 @@ function Home() {
     }
 
     return () => {
+      socket.off("Welcome", handleWelcome);
+      socket.off("groupCreated", handleGroupCreated);
       isMounted = false;
     };
-  }, [])
+  }, [socketRef.current])
 
   const handleRoomSubmit = (e) => {
     e.preventDefault()
