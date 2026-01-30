@@ -1,0 +1,115 @@
+/* Reset & base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  body {
+    background: #0f172a; /* dark blue */
+    color: #e5e7eb;
+  }
+  
+  /* App wrapper */
+  .app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  /* Title */
+  .title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #f8fafc;
+  }
+  
+  /* Create room form */
+  .create-room-form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .room-input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #1e293b;
+    color: #f8fafc;
+  }
+  
+  .room-input::placeholder {
+    color: #94a3b8;
+  }
+  
+  .create-btn {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    transition: background 0.2s ease;
+  }
+  
+  .create-btn:hover {
+    background: #1d4ed8;
+  }
+  
+  /* Room list */
+  .room-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* Room item */
+  .room-item {
+    width: 100%;
+  }
+  
+  /* Room button */
+  .room-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #1e293b;
+    background: #020617;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+  
+  .room-btn h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e5e7eb;
+  }
+  
+  .room-btn:hover {
+    background: #020617;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+  }
+  
+  /* Mobile optimization */
+  @media (max-width: 480px) {
+    .create-room-form {
+      flex-direction: column;
+    }
+  
+    .create-btn {
+      width: 100%;
+    }
+  }
+  
