@@ -35,14 +35,42 @@ function Chat() {
         socket.on("userJoined", (val) => {
             const msg = {
                 userJoinedNotification: true,
-                userName: val.userName,
-                socketId: val.socketId
+                userName: val.username
+            }
+            setMessages((prev) => [...prev, msg]);
+        })
+        socket.on("userLeft", (val) => {
+            const msg = {
+                userLeftNotification: true,
+                userName: val.username,
             }
             setMessages((prev) => [...prev, msg]);
         })
 
         return () => {
             socket.emit("leaveGroupRoom", groupId);
+            socket.on("leaveGroupRoom", (groupId) => {
+                socket.leave(groupId);
+            });
+
+            const url = `${import.meta.env.VITE_GROUP}/leave-group`;
+            const params = {
+                groupId,
+                userId: socketRef.current.id
+            };
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch(error => console.error('Error:', error));
+
             socket.off("groupMessage", handleIncomingMessage);
         };
     }, [groupId, socketRef]);
@@ -74,32 +102,38 @@ function Chat() {
                 {messages.map((msg, index) => {
                     const isOwn = msg.sender === socketRef?.current?.id;
 
+                    // 🔔 SYSTEM MESSAGE (JOIN / LEAVE)
+                    if (msg.userJoinedNotification || msg.userLeftNotification) {
+                        const text =
+                            msg.socketId === socketRef?.current?.id
+                                ? msg.userJoinedNotification
+                                    ? "You joined the group"
+                                    : "You left the group"
+                                : msg.userJoinedNotification
+                                    ? `${msg.userName} joined the group`
+                                    : `${msg.userName} left the group`;
+
+                        return (
+                            <div key={index} className="system-message">
+                                {text}
+                            </div>
+                        );
+                    }
+
+                    // 💬 NORMAL CHAT MESSAGE
                     return (
                         <div
                             key={index}
                             className={`message ${isOwn ? "message--own" : ""}`}
                         >
-                            {(msg.userJoinedNotification) ? (
-                                
-                                    msg.socketId !== socketRef?.current?.id ?
-                                        (
-                                            <>
-                                                <span className="joined-notification">{`User Joined ${msg.userName}`}</span>
-                                            </>
-                                        ) : <>You Joined The Room</>
-                                
-                            ) :
-                                (
-                                    <><span className="message-author">
-                                        {isOwn ? "You" : msg.username || "User"}:
-                                    </span>
-                                        <span className="message-text">{msg.text}</span>
-                                    </>
-                                )
-                            }
+                            <span className="message-author">
+                                {isOwn ? "You" : msg.username || "User"}:
+                            </span>
+                            <span className="message-text">{msg.text}</span>
                         </div>
                     );
                 })}
+
             </div>
 
             <form className="chat-input-form" onSubmit={sendMessage}>

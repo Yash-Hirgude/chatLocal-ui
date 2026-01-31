@@ -61,8 +61,12 @@
     line-height: 1.4;
   }
 
-  .joined-notification{
-      
+  .system-message {
+    align-self: center;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #9ca3af;
+    font-style: italic;
   }
   
   /* ---------- INPUT AREA ---------- */

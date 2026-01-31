@@ -3,6 +3,7 @@ import { useRef, useEffect, useState } from 'react'
 import './Home.css'
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/SocketContext";
+import { ToastContainer, toast } from 'react-toastify';
 
 
 function Home() {
@@ -12,6 +13,9 @@ function Home() {
   const [lat, setLat] = useState(null)
   const [lng, setLng] = useState(null)
   const [rooms,setRooms] = useState([]);
+
+  const notify = (groupName) => toast(`A new group ${groupName} was created! Refresh the page to see`);
+
 
   async function getGroups(lat,lng) {
     const url = new URL(`${import.meta.env.VITE_GROUP}/nearby`); // Base URL
@@ -37,7 +41,10 @@ function Home() {
     if (!socket) return;
 
     const handleWelcome = (data) => console.log(data);
-    const handleGroupCreated = (group) => console.log(group.name);
+    const handleGroupCreated = (group) => {
+      notify(group.name);
+      console.log('room created',group.name)
+    }
 
     socket.on("Welcome", handleWelcome);
     socket.on("groupCreated", handleGroupCreated);
@@ -97,11 +104,26 @@ function Home() {
     console.log('Sent:', { roomName, lat, lng })
   }
 
-  function roomClickedHandler(roomId,groupName){
+  async function roomClickedHandler(roomId,groupName){
     console.log(roomId);
-    // sessionStorage.setItem("enteredFromHome", "true");
-    // navigate(`/group/${roomId}`);
-    navigate(`/group/${roomId}`, { state: { enteredFromHome: true, groupName } });
+    const url = `${import.meta.env.VITE_GROUP}/join-group`;
+    const params = {
+      groupId: roomId,
+      userId: socketRef.current.id
+    };
+    fetch(url, {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify(params) 
+    })
+      .then(response => response.json()) 
+      .then(data => {
+        console.log('Success:', data);
+        navigate(`/group/${roomId}`, { state: { enteredFromHome: true, groupName } });
+      })
+      .catch(error => console.error('Error:', error));
   }
 
   return (
@@ -138,6 +160,7 @@ function Home() {
             )
           })}
         </ul>
+        <ToastContainer />
       </div>
     </>
   )
